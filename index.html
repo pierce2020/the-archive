@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PPL Prose</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  /* Palette */
+  --red:        #7A1020;
+  --red-d:      #540B17;
+  --red-l:      #9B1E30;
+  --red-faint:  #7A102015;
+  --gold:       #B8973E;
+  --gold-l:     #D4B468;
+  --gold-faint: #B8973E22;
+  --white:      #FFFFFF;
+  --off-white:  #F8F4EF;
+  --warm-gray:  #EDE8E2;
+  --mid-gray:   #9A8F85;
+  --dark:       #1A1210;
+  --near-black: #120D0C;
+  --rule:       #E2D9D0;
+
+  /* Article view (Kindle: black on white) */
+  --art-bg:     #FFFFFF;
+  --art-text:   #1A1210;
+  --art-faint:  #9A8F85;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--off-white);
+  color: var(--dark);
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── SCREENS ── */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ── LOGIN ── */
+#login-screen, #admin-login-screen {
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: radial-gradient(ellipse at 50% 10%, #8C1A2E33 0%, transparent 65%), var(--red-d);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: #3D0812CC;
+  border: 1px solid #C9A84C77;
+  padding: 3rem 2.8rem;
+  position: relative;
+  box-shadow: 0 2px 40px #00000033;
+}
+
+/* Red top bar */
+.login-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--gold);
+}
+
+.login-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 500;
+  margin-bottom: 1.2rem;
+}
+
+.login-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2.4rem;
+  line-height: 1;
+  color: var(--white);
+  margin-bottom: 0.3rem;
+}
+
+.login-sub {
+  font-size: 0.88rem;
+  color: var(--gold-l);
+  margin-bottom: 2.2rem;
+  font-style: italic;
+  opacity: 0.75;
+}
+
+.login-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #C9A84C66, transparent);
+  margin-bottom: 2rem;
+}
+
+.field-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mid-gray);
+  margin-bottom: 0.4rem;
+}
+
+.field-input {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid #C9A84C44;
+  background: #2A071088;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  color: var(--white);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  margin-bottom: 1rem;
+}
+.field-input:focus { border-color: var(--gold-d); background: #3A0A1899; }
+.field-input::placeholder { color: #7A6560; }
+
+.primary-btn {
+  width: 100%;
+  padding: 0.8rem;
+  background: var(--red);
+  color: var(--white);
+  border: 1px solid var(--gold-d);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 0.8rem;
+}
+.primary-btn:hover { background: var(--red-l); }
+
+.login-err {
+  font-size: 0.82rem;
+  color: #F0A090;
+  font-style: italic;
+  min-height: 1.2em;
+  margin-bottom: 0.5rem;
+}
+
+.text-link {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #7A6560;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s;
+  display: inline-block;
+  margin-top: 1.5rem;
+}
+.text-link:hover { color: var(--gold); }
+
+/* Loading overlay */
+.loading-bar {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--red);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s;
+  z-index: 9999;
+}
+.loading-bar.active { transform: scaleX(0.85); }
+.loading-bar.done   { transform: scaleX(1); transition: transform 0.1s; }
+
+/* ── SITE HEADER ── */
+.site-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--rule);
+  padding: 0 3rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+
+.site-logo {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.2rem;
+  color: var(--dark);
+  letter-spacing: 0.01em;
+}
+
+.site-logo span {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--red);
+  border-radius: 50%;
+  margin-left: 4px;
+  vertical-align: middle;
+  margin-bottom: 2px;
+}
+
+.nav-actions { display: flex; align-items: center; gap: 1.5rem; }
+
+.nav-btn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mid-gray);
+  cursor: pointer;
+  border: none;
+  background: none;
+  transition: color 0.2s;
+  padding: 0;
+}
+.nav-btn:hover { color: var(--red); }
+
+/* ── READER SCREEN ── */
+#reader-screen { background: var(--off-white); }
+
+.reader-body {
+  max-width: 760px;
+  padding: 3.5rem 3rem;
+}
+
+.reader-greeting {
+  font-size: 0.88rem;
+  color: var(--mid-gray);
+  font-style: italic;
+  margin-bottom: 2.5rem;
+}
+
+.section-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+  max-width: 60px;
+}
+
+/* Post cards */
+.post-card {
+  background: var(--white);
+  border: 1px solid var(--rule);
+  padding: 1.6rem 2rem;
+  margin-bottom: 1px;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  position: relative;
+}
+.post-card:hover {
+  border-color: var(--red);
+  box-shadow: 0 2px 12px #7A102010;
+  z-index: 1;
+}
+.post-card:first-child { border-radius: 4px 4px 0 0; }
+.post-card:last-child  { border-radius: 0 0 4px 4px; margin-bottom: 0; }
+.post-card:only-child  { border-radius: 4px; }
+
+.post-card-left {
+  flex-shrink: 0;
+  text-align: center;
+  min-width: 42px;
+}
+
+.post-card-day {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--dark);
+}
+
+.post-card-mon {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mid-gray);
+}
+
+.post-card-divider {
+  width: 1px;
+  align-self: stretch;
+  background: var(--rule);
+  flex-shrink: 0;
+}
+
+.post-card-body { flex: 1; min-width: 0; }
+
+.post-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.35rem;
+}
+
+.post-type-badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--red);
+  background: var(--red-faint);
+  padding: 0.15rem 0.5rem;
+  border-radius: 2px;
+}
+
+.post-year {
+  font-size: 11px;
+  color: var(--mid-gray);
+}
+
+.post-card-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.25rem;
+  color: var(--dark);
+  line-height: 1.25;
+  margin-bottom: 0.4rem;
+  transition: color 0.15s;
+}
+.post-card:hover .post-card-title { color: var(--red); }
+
+.post-card-preview {
+  font-size: 0.88rem;
+  color: var(--mid-gray);
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.post-card-arrow {
+  color: var(--rule);
+  font-size: 1.2rem;
+  align-self: center;
+  flex-shrink: 0;
+  transition: color 0.15s, transform 0.15s;
+}
+.post-card:hover .post-card-arrow { color: var(--red); transform: translateX(3px); }
+
+/* ── ARTICLE SCREEN ── */
+#article-screen {
+  background: var(--art-bg);
+  color: var(--art-text);
+}
+
+#article-screen .site-header {
+  background: var(--white);
+  border-bottom-color: var(--rule);
+}
+#article-screen .site-logo { color: var(--dark); }
+#article-screen .nav-btn { color: var(--mid-gray); }
+#article-screen .nav-btn:hover { color: var(--red); }
+
+.article-body {
+  max-width: 660px;
+  margin: 0 auto;
+  padding: 5rem 2rem 8rem;
+}
+
+.article-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.2rem;
+}
+
+.article-eyebrow-date {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--art-faint);
+}
+
+.article-badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--red);
+  background: var(--red-faint);
+  border: 1px solid #7A102033;
+  padding: 0.15rem 0.55rem;
+  border-radius: 2px;
+}
+
+.article-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.1;
+  color: var(--white);
+  margin-bottom: 2.5rem;
+  letter-spacing: -0.01em;
+}
+
+.article-rule {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 3rem;
+}
+.article-rule::before, .article-rule::after {
+  content: ''; flex: 1; height: 1px;
+}
+.article-rule::before { background: linear-gradient(to right, transparent, var(--rule)); }
+.article-rule::after  { background: linear-gradient(to left, transparent, var(--rule)); }
+.rule-dot {
+  width: 5px; height: 5px;
+  background: var(--red);
+  border-radius: 50%;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.article-text {
+  font-size: 1.1rem;
+  line-height: 1.9;
+  color: var(--art-text);
+  font-weight: 300;
+}
+.article-text p { margin-bottom: 1.6em; }
+.article-text p:last-child { margin-bottom: 0; }
+
+/* ── ADMIN ── */
+#admin-screen { background: var(--off-white); }
+
+.admin-body { padding: 2.5rem 3rem; max-width: 900px; }
+
+.admin-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 2rem;
+  background: var(--white);
+  padding: 0 1rem;
+  margin-left: -3rem;
+  margin-right: -3rem;
+  padding-left: 3rem;
+}
+.admin-tab {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.9rem 1.2rem;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: var(--mid-gray);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.2s;
+}
+.admin-tab.active { color: var(--red); border-bottom-color: var(--red); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Form */
+.form-card {
+  background: var(--white);
+  border: 1px solid var(--rule);
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group { margin-bottom: 1.4rem; }
+.form-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mid-gray);
+  margin-bottom: 0.45rem;
+}
+.form-input, .form-textarea, .form-select {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--rule);
+  background: var(--off-white);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  color: var(--dark);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+.form-input:focus, .form-textarea:focus, .form-select:focus {
+  border-color: var(--red);
+  background: var(--white);
+}
+.form-input::placeholder, .form-textarea::placeholder { color: #C0B8B0; }
+.form-textarea { resize: vertical; min-height: 240px; line-height: 1.7; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+/* Reader checkboxes */
+.readers-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.reader-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--rule);
+  background: var(--off-white);
+  cursor: pointer;
+  font-size: 0.88rem;
+  border-radius: 20px;
+  transition: all 0.15s;
+  color: var(--dark);
+  user-select: none;
+}
+.reader-pill:has(input:checked) {
+  border-color: var(--red);
+  background: var(--red-faint);
+  color: var(--red);
+}
+.reader-pill input { display: none; }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1.6rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  border-radius: 2px;
+}
+.btn-red  { background: var(--red); color: var(--white); }
+.btn-red:hover  { background: var(--red-l); }
+.btn-ghost { background: transparent; color: var(--mid-gray); border: 1px solid var(--rule); }
+.btn-ghost:hover { border-color: var(--dark); color: var(--dark); }
+.btn-danger { background: transparent; color: #C0392B; border: 1px solid #C0392B44; }
+.btn-danger:hover { background: #C0392B; color: white; }
+.btn-sm { padding: 0.35rem 0.9rem; font-size: 10px; }
+
+/* Post list (admin) */
+.post-row {
+  background: var(--white);
+  border: 1px solid var(--rule);
+  padding: 1.1rem 1.4rem;
+  margin-bottom: 1px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.post-row:first-child { border-radius: 4px 4px 0 0; }
+.post-row:last-child  { border-radius: 0 0 4px 4px; margin-bottom: 0; }
+.post-row:only-child  { border-radius: 4px; }
+.post-row-info { flex: 1; min-width: 0; }
+.post-row-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1rem;
+  color: var(--dark);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.post-row-sub { font-size: 0.78rem; color: var(--mid-gray); margin-top: 0.1rem; }
+
+/* Reader row */
+.reader-row {
+  background: var(--white);
+  border: 1px solid var(--rule);
+  padding: 1rem 1.4rem;
+  margin-bottom: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.reader-row:first-child { border-radius: 4px 4px 0 0; }
+.reader-row:last-child  { border-radius: 0 0 4px 4px; margin-bottom: 0; }
+.reader-row:only-child  { border-radius: 4px; }
+.reader-row-name { font-weight: 500; font-size: 0.95rem; }
+.reader-row-pass { font-size: 0.82rem; color: var(--mid-gray); font-style: italic; }
+
+.add-reader-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 0.75rem;
+  align-items: end;
+  margin-bottom: 1.5rem;
+}
+
+.toast {
+  position: fixed; bottom: 2rem; right: 2rem;
+  background: var(--dark);
+  color: var(--white);
+  padding: 0.75rem 1.2rem;
+  font-size: 0.88rem;
+  border-radius: 4px;
+  box-shadow: 0 4px 20px #00000033;
+  transform: translateY(8px);
+  opacity: 0;
+  transition: all 0.25s;
+  pointer-events: none;
+  z-index: 9998;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-left: 3px solid #27AE60; }
+.toast.error   { border-left: 3px solid var(--red); }
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--mid-gray);
+  font-style: italic;
+  font-size: 0.95rem;
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+}
+
+@media (max-width: 640px) {
+  .site-header { padding: 0 1.2rem; }
+  .reader-body { padding: 2rem 1.2rem; }
+  .article-body { padding: 3rem 1.2rem 5rem; }
+  .admin-body { padding: 1.5rem 1.2rem; }
+  .admin-tabs { padding-left: 1.2rem; margin-left: -1.2rem; margin-right: -1.2rem; }
+  .article-title { font-size: 2rem; }
+  .form-row, .add-reader-row { grid-template-columns: 1fr; }
+  .post-card { flex-direction: column; gap: 0.8rem; }
+  .post-card-divider { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="loading-bar" id="loading-bar"></div>
+<div class="toast" id="toast"></div>
+
+<!-- ══ LOGIN ══ -->
+<div id="login-screen" class="screen active">
+  <div class="login-card">
+    <div class="login-eyebrow">Private Writings</div>
+    <h1 class="login-title">PPL Prose</h1>
+    <p class="login-sub">progress, not perfection</p>
+    <div class="login-divider"></div>
+    <label class="field-label" for="login-input">Password</label>
+    <input type="password" id="login-input" class="field-input" placeholder="Enter your password" autocomplete="off" />
+    <div class="login-err" id="login-err"></div>
+    <button class="primary-btn" onclick="handleLogin()">Enter</button>
+    <br>
+    <a class="text-link" onclick="showScreen('admin-login-screen')">Editor access →</a>
+  </div>
+</div>
+
+<!-- ══ ADMIN LOGIN ══ -->
+<div id="admin-login-screen" class="screen">
+  <div class="login-card">
+    <div class="login-eyebrow">Editor Access</div>
+    <h1 class="login-title">PPL Prose</h1>
+    <p class="login-sub">admin panel</p>
+    <div class="login-divider"></div>
+    <label class="field-label" for="admin-input">Admin Password</label>
+    <input type="password" id="admin-input" class="field-input" placeholder="Enter admin password" autocomplete="off" />
+    <div class="login-err" id="admin-err"></div>
+    <button class="primary-btn" onclick="handleAdminLogin()">Enter</button>
+    <br>
+    <a class="text-link" onclick="showScreen('login-screen')">← Reader login</a>
+  </div>
+</div>
+
+<!-- ══ READER ══ -->
+<div id="reader-screen" class="screen">
+  <header class="site-header">
+    <div class="site-logo">PPL Prose<span></span></div>
+    <div class="nav-actions">
+      <button class="nav-btn" onclick="logout()">Sign out</button>
+    </div>
+  </header>
+  <div class="reader-body">
+    <p class="reader-greeting" id="reader-greeting"></p>
+    <div class="section-label">Latest</div>
+    <div id="post-list"></div>
+  </div>
+</div>
+
+<!-- ══ ARTICLE ══ -->
+<div id="article-screen" class="screen">
+  <header class="site-header">
+    <div class="site-logo">PPL Prose<span></span></div>
+    <div class="nav-actions">
+      <button class="nav-btn" onclick="showReader()">← Back</button>
+      <button class="nav-btn" onclick="logout()">Sign out</button>
+    </div>
+  </header>
+  <div class="article-body">
+    <div class="article-eyebrow">
+      <span class="article-eyebrow-date" id="art-date"></span>
+      <span class="article-badge" id="art-badge" style="display:none"></span>
+    </div>
+    <h1 class="article-title" id="art-title"></h1>
+    <div class="article-rule"><div class="rule-dot"></div></div>
+    <div class="article-text" id="art-text"></div>
+  </div>
+</div>
+
+<!-- ══ ADMIN ══ -->
+<div id="admin-screen" class="screen">
+  <header class="site-header">
+    <div class="site-logo">PPL Prose<span></span></div>
+    <div class="nav-actions">
+      <button class="nav-btn" onclick="showScreen('login-screen')">View site</button>
+      <button class="nav-btn" onclick="logout()">Sign out</button>
+    </div>
+  </header>
+  <div class="admin-body">
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchTab('tab-write',this)">Write</button>
+      <button class="admin-tab" onclick="switchTab('tab-posts',this)">Posts</button>
+      <button class="admin-tab" onclick="switchTab('tab-readers',this)">Readers</button>
+    </div>
+
+    <!-- ── WRITE ── -->
+    <div id="tab-write" class="tab-panel active">
+      <div class="form-card">
+        <div class="form-group">
+          <label class="form-label">Title</label>
+          <input type="text" id="p-title" class="form-input" placeholder="Give it a title…" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Type</label>
+            <select id="p-tag" class="form-select">
+              <option value="">— none —</option>
+              <option value="Essay">Essay</option>
+              <option value="Story">Story</option>
+              <option value="Poem">Poem</option>
+              <option value="Note">Note</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input type="date" id="p-date" class="form-input" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Body <span style="font-size:10px;color:#C0B8B0;letter-spacing:0;text-transform:none;font-weight:400;">(blank line between paragraphs)</span></label>
+          <textarea id="p-body" class="form-textarea" placeholder="Write here…"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Share with</label>
+          <div class="readers-grid" id="readers-pills"></div>
+          <div style="margin-top:0.6rem;">
+            <label class="reader-pill" style="border-radius:20px;" id="share-all-label">
+              <input type="checkbox" id="share-all" onchange="toggleShareAll(this)" />
+              Everyone
+            </label>
+          </div>
+        </div>
+        <div style="display:flex;gap:0.75rem;margin-top:0.5rem;">
+          <button class="btn btn-red" onclick="publishPost()">Publish</button>
+          <button class="btn btn-ghost" onclick="clearForm()">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── POSTS ── -->
+    <div id="tab-posts" class="tab-panel">
+      <div id="admin-post-list"></div>
+    </div>
+
+    <!-- ── READERS ── -->
+    <div id="tab-readers" class="tab-panel">
+      <div class="form-card">
+        <div class="add-reader-row">
+          <div>
+            <label class="form-label">Name</label>
+            <input type="text" id="r-name" class="form-input" placeholder="e.g. Sarah" />
+          </div>
+          <div>
+            <label class="form-label">Password</label>
+            <input type="text" id="r-pass" class="form-input" placeholder="e.g. moon2025" autocomplete="off" />
+          </div>
+          <button class="btn btn-red" onclick="addReader()" style="align-self:end;">Add Reader</button>
+        </div>
+      </div>
+      <div id="reader-list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════
+// SUPABASE CONFIG — replace these two lines
+// ════════════════════════════════════════
+const SUPABASE_URL  = 'https://ningjmekeilcqbjklicz.supabase.co';
+const SUPABASE_KEY  = 'sb_publishable_DxEp_BxKr4Bn0bL2twBEaA_sIG1-8Wl';
+const ADMIN_PASS    = 'admin2025'; // change this after deploy
+
+// ── Supabase helpers ──
+const sb = (path, opts={}) => fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+  headers: {
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
+    'Content-Type': 'application/json',
+    'Prefer': opts.prefer || '',
+  },
+  ...opts
+}).then(r => r.ok ? (r.status===204 ? null : r.json()) : r.json().then(e => { throw e; }));
+
+const dbGet  = (table, query='')    => sb(`${table}?${query}`);
+const dbPost = (table, body)        => sb(table, { method:'POST', body:JSON.stringify(body), prefer:'return=representation' });
+const dbDel  = (table, query)       => sb(`${table}?${query}`, { method:'DELETE' });
+
+// ── Local state (cache) ──
+let readers = [];
+let currentUser = null;
+
+// ── Utils ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function toast(msg, type='success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast show ${type}`;
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function loading(on) {
+  const bar = document.getElementById('loading-bar');
+  if (on) { bar.classList.remove('done'); bar.classList.add('active'); }
+  else    { bar.classList.add('done'); setTimeout(() => bar.classList.remove('active','done'), 300); }
+}
+
+function formatDate(str) {
+  if (!str) return '';
+  const [y,m,d] = str.split('-');
+  return `${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]} ${+d}, ${y}`;
+}
+
+function fmtShort(str) {
+  if (!str) return { day:'—', mon:'', yr:'' };
+  const [y,m,d] = str.split('-');
+  return {
+    day: +d,
+    mon: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1],
+    yr: y
+  };
+}
+
+// ── Auth ──
+function handleLogin() {
+  const val = document.getElementById('login-input').value.trim();
+  const err = document.getElementById('login-err');
+  const reader = readers.find(r => r.password === val);
+  if (reader) {
+    currentUser = reader; err.textContent = '';
+    document.getElementById('login-input').value = '';
+    renderReader(); showScreen('reader-screen');
+  } else {
+    err.textContent = "That password isn't recognised.";
+  }
+}
+document.getElementById('login-input').addEventListener('keydown', e => { if (e.key==='Enter') handleLogin(); });
+
+function handleAdminLogin() {
+  const val = document.getElementById('admin-input').value.trim();
+  const err = document.getElementById('admin-err');
+  if (val === ADMIN_PASS) {
+    currentUser = { id: '__admin__', name: 'Admin' };
+    err.textContent = ''; document.getElementById('admin-input').value = '';
+    renderAdmin(); showScreen('admin-screen');
+  } else {
+    err.textContent = 'Incorrect password.';
+  }
+}
+document.getElementById('admin-input').addEventListener('keydown', e => { if (e.key==='Enter') handleAdminLogin(); });
+
+function logout() { currentUser = null; showScreen('login-screen'); }
+
+// ── Load readers on startup ──
+async function init() {
+  try {
+    loading(true);
+    readers = await dbGet('readers', 'order=name.asc');
+  } catch(e) {
+    console.error('Could not load readers:', e);
+    readers = [];
+  } finally {
+    loading(false);
+  }
+}
+
+// ── Reader view ──
+async function renderReader() {
+  document.getElementById('reader-greeting').textContent = `Welcome back, ${currentUser.name}.`;
+  loading(true);
+  try {
+    // Get post_readers entries for this reader
+    const pr = await dbGet('post_readers', `reader_id=eq.${currentUser.id}&select=post_id`);
+    const postIds = pr.map(x => x.post_id);
+    if (!postIds.length) {
+      document.getElementById('post-list').innerHTML = '<div class="empty-state">Nothing here for you yet — check back soon.</div>';
+      return;
+    }
+    const posts = await dbGet('posts', `id=in.(${postIds.join(',')})&order=date.desc`);
+    renderPostList(posts);
+  } catch(e) {
+    console.error(e);
+    toast('Could not load posts', 'error');
+  } finally {
+    loading(false);
+  }
+}
+
+function renderPostList(posts) {
+  const list = document.getElementById('post-list');
+  if (!posts.length) {
+    list.innerHTML = '<div class="empty-state">Nothing here for you yet — check back soon.</div>';
+    return;
+  }
+  list.innerHTML = '';
+  posts.forEach(p => {
+    const d = fmtShort(p.date);
+    const card = document.createElement('div');
+    card.className = 'post-card';
+    card.innerHTML = `
+      <div class="post-card-left">
+        <div class="post-card-day">${d.day}</div>
+        <div class="post-card-mon">${d.mon}</div>
+      </div>
+      <div class="post-card-divider"></div>
+      <div class="post-card-body">
+        <div class="post-card-meta">
+          ${p.tag ? `<span class="post-type-badge">${p.tag}</span>` : ''}
+          <span class="post-year">${d.yr}</span>
+        </div>
+        <div class="post-card-title">${p.title}</div>
+        <div class="post-card-preview">${p.body.split('\n')[0]}</div>
+      </div>
+      <div class="post-card-arrow">→</div>`;
+    card.onclick = () => openArticle(p);
+    list.appendChild(card);
+  });
+}
+
+function showReader() { renderReader(); showScreen('reader-screen'); }
+
+function openArticle(p) {
+  document.getElementById('art-date').textContent = formatDate(p.date);
+  const badge = document.getElementById('art-badge');
+  if (p.tag) { badge.textContent = p.tag; badge.style.display=''; }
+  else { badge.style.display='none'; }
+  document.getElementById('art-title').textContent = p.title;
+  document.getElementById('art-text').innerHTML = p.body
+    .split('\n\n')
+    .map(para => `<p>${para.replace(/\n/g,'<br>')}</p>`)
+    .join('');
+  showScreen('article-screen');
+}
+
+// ── Admin ──
+function renderAdmin() {
+  renderReaderPills();
+  document.getElementById('p-date').value = new Date().toISOString().split('T')[0];
+  renderAdminPostList();
+  renderReaderMgmt();
+}
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function renderReaderPills() {
+  const grid = document.getElementById('readers-pills');
+  grid.innerHTML = '';
+  readers.forEach(r => {
+    const label = document.createElement('label');
+    label.className = 'reader-pill';
+    label.innerHTML = `<input type="checkbox" value="${r.id}" checked /> ${r.name}`;
+    grid.appendChild(label);
+  });
+}
+
+function toggleShareAll(cb) {
+  const all = document.querySelectorAll('#readers-pills input');
+  all.forEach(i => i.checked = cb.checked);
+  const label = document.getElementById('share-all-label');
+  if (cb.checked) { label.style.borderColor='var(--red)'; label.style.background='var(--red-faint)'; label.style.color='var(--red)'; }
+  else { label.style.borderColor=''; label.style.background=''; label.style.color=''; }
+}
+
+async function publishPost() {
+  const title  = document.getElementById('p-title').value.trim();
+  const body   = document.getElementById('p-body').value.trim();
+  const tag    = document.getElementById('p-tag').value;
+  const date   = document.getElementById('p-date').value;
+  if (!title || !body) { toast('Need a title and body.', 'error'); return; }
+  const checked = [...document.querySelectorAll('#readers-pills input:checked')].map(i=>i.value);
+  loading(true);
+  try {
+    const [post] = await dbPost('posts', { title, body, tag, date });
+    if (checked.length) {
+      await dbPost('post_readers', checked.map(rid => ({ post_id: post.id, reader_id: rid })));
+    }
+    toast('Published ✓');
+    clearForm();
+    renderAdminPostList();
+  } catch(e) {
+    console.error(e);
+    toast('Error publishing post', 'error');
+  } finally {
+    loading(false);
+  }
+}
+
+function clearForm() {
+  ['p-title','p-body'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('p-tag').value = '';
+  document.getElementById('p-date').value = new Date().toISOString().split('T')[0];
+  document.querySelectorAll('#readers-pills input').forEach(i => i.checked=true);
+  document.getElementById('share-all').checked = false;
+  toggleShareAll({ checked: false });
+}
+
+async function renderAdminPostList() {
+  const wrap = document.getElementById('admin-post-list');
+  loading(true);
+  try {
+    const posts = await dbGet('posts', 'order=date.desc');
+    if (!posts.length) {
+      wrap.innerHTML = '<div class="empty-state">No posts yet. Write one in the Write tab.</div>';
+      return;
+    }
+    wrap.innerHTML = '';
+    for (const p of posts) {
+      const pr = await dbGet('post_readers', `post_id=eq.${p.id}&select=reader_id`);
+      const names = pr.map(x => readers.find(r=>r.id===x.reader_id)?.name).filter(Boolean).join(', ') || 'No one';
+      const row = document.createElement('div');
+      row.className = 'post-row';
+      row.innerHTML = `
+        <div class="post-row-info">
+          <div class="post-row-title">${p.title}</div>
+          <div class="post-row-sub">${formatDate(p.date)}${p.tag?' · '+p.tag:''} · ${names}</div>
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="deletePost('${p.id}')">Delete</button>`;
+      wrap.appendChild(row);
+    }
+  } catch(e) {
+    wrap.innerHTML = '<div class="empty-state">Could not load posts.</div>';
+  } finally {
+    loading(false);
+  }
+}
+
+async function deletePost(id) {
+  if (!confirm('Delete this post?')) return;
+  loading(true);
+  try {
+    await dbDel('post_readers', `post_id=eq.${id}`);
+    await dbDel('posts', `id=eq.${id}`);
+    toast('Post deleted');
+    renderAdminPostList();
+  } catch(e) {
+    toast('Error deleting', 'error');
+  } finally {
+    loading(false);
+  }
+}
+
+async function renderReaderMgmt() {
+  const wrap = document.getElementById('reader-list');
+  if (!readers.length) {
+    wrap.innerHTML = '<div class="empty-state">No readers yet.</div>';
+    return;
+  }
+  wrap.innerHTML = '';
+  readers.forEach(r => {
+    const row = document.createElement('div');
+    row.className = 'reader-row';
+    row.innerHTML = `
+      <div>
+        <div class="reader-row-name">${r.name}</div>
+        <div class="reader-row-pass">password: ${r.password}</div>
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="deleteReader('${r.id}')">Remove</button>`;
+    wrap.appendChild(row);
+  });
+}
+
+async function addReader() {
+  const name = document.getElementById('r-name').value.trim();
+  const pass = document.getElementById('r-pass').value.trim();
+  if (!name || !pass) { toast('Need a name and password.', 'error'); return; }
+  loading(true);
+  try {
+    const [r] = await dbPost('readers', { name, password: pass });
+    readers.push(r);
+    document.getElementById('r-name').value = '';
+    document.getElementById('r-pass').value = '';
+    toast(`${name} added ✓`);
+    renderReaderMgmt();
+    renderReaderPills();
+  } catch(e) {
+    toast('Error adding reader', 'error');
+  } finally {
+    loading(false);
+  }
+}
+
+async function deleteReader(id) {
+  if (!confirm('Remove this reader?')) return;
+  loading(true);
+  try {
+    await dbDel('post_readers', `reader_id=eq.${id}`);
+    await dbDel('readers', `id=eq.${id}`);
+    readers = readers.filter(r => r.id !== id);
+    toast('Reader removed');
+    renderReaderMgmt();
+    renderReaderPills();
+  } catch(e) {
+    toast('Error removing reader', 'error');
+  } finally {
+    loading(false);
+  }
+}
+
+// Boot
+init();
+</script>
+</body>
+</html>
