@@ -3,19 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PPL Prose</title>
+<title>Pierce Prose</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  /* Palette */
-  --red:        #7A1020;
-  --red-d:      #540B17;
-  --red-l:      #9B1E30;
-  --red-faint:  #7A102015;
-  --gold:       #B8973E;
+  --red:        #4A0E1C;
+  --red-d:      #3A0810;
+  --red-l:      #6B1828;
+  --red-faint:  #4A0E1C15;
+  --gold:       #C9A84C;
   --gold-l:     #D4B468;
-  --gold-faint: #B8973E22;
+  --gold-faint: #C9A84C22;
   --white:      #FFFFFF;
   --off-white:  #F8F4EF;
   --warm-gray:  #EDE8E2;
@@ -24,7 +23,6 @@
   --near-black: #120D0C;
   --rule:       #E2D9D0;
 
-  /* Article view (Kindle: black on white) */
   --art-bg:     #FFFFFF;
   --art-text:   #1A1210;
   --art-faint:  #9A8F85;
@@ -41,16 +39,124 @@ body {
   min-height: 100vh;
 }
 
-/* ── SCREENS ── */
 .screen { display: none; min-height: 100vh; }
 .screen.active { display: flex; flex-direction: column; }
 
 /* ── LOGIN ── */
-#login-screen, #admin-login-screen {
+#login-screen {
+  background: var(--red);
+  flex-direction: column;
+}
+
+.passport-gold-bar {
+  height: 3px;
+  background: var(--gold);
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.passport-top {
+  padding: 3rem 2.4rem 2.4rem;
+  text-align: center;
+  border-bottom: 1px solid #C9A84C33;
+}
+
+.passport-numbers {
+  font-size: 11px;
+  letter-spacing: 0.38em;
+  color: var(--gold);
+  font-weight: 500;
+  margin-bottom: 2rem;
+}
+
+.passport-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 3rem;
+  color: #F0E2C0;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  margin-bottom: 0.5rem;
+}
+
+.passport-subtitle {
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #C9A84C99;
+  font-style: italic;
+}
+
+.passport-mrz-block {
+  border-top: 1px solid #3A0810;
+  border-bottom: 1px solid #3A0810;
+  background: #3D0B16;
+}
+
+.passport-mrz {
+  padding: 0.45rem 2.4rem;
+  font-family: 'Courier New', monospace;
+  font-size: 8px;
+  color: #6A2838;
+  letter-spacing: 0.06em;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.passport-form {
+  flex: 1;
+  background: var(--red);
+  padding: 3rem 2.4rem 2.4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.passport-input {
+  width: 100%;
+  padding: 0.65rem 0;
+  border: none;
+  border-top: 1px solid #6B1020;
+  border-bottom: 1px solid #6B1020;
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  color: #F0E2C0;
+  outline: none;
+  letter-spacing: 0.14em;
+}
+.passport-input::placeholder { color: #6B2030; }
+.passport-input:focus {
+  border-top-color: #C9A84C55;
+  border-bottom-color: #C9A84C55;
+}
+
+.login-err {
+  font-size: 0.78rem;
+  color: #F0A090;
+  font-style: italic;
+  min-height: 1em;
+  margin-top: 0.6rem;
+}
+
+.passport-admin-link {
+  display: inline-block;
+  font-size: 8.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #6B2030;
+  cursor: pointer;
+  margin-top: 2.5rem;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.passport-admin-link:hover { color: #C9A84C66; }
+
+/* ── ADMIN LOGIN ── */
+#admin-login-screen {
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: radial-gradient(ellipse at 50% 10%, #8C1A2E33 0%, transparent 65%), var(--red-d);
+  background: radial-gradient(ellipse at 50% 10%, #4A0E1C33 0%, transparent 65%), var(--red-d);
 }
 
 .login-card {
@@ -62,8 +168,6 @@ body {
   position: relative;
   box-shadow: 0 2px 40px #00000033;
 }
-
-/* Red top bar */
 .login-card::before {
   content: '';
   position: absolute;
@@ -126,7 +230,7 @@ body {
   transition: border-color 0.2s, background 0.2s;
   margin-bottom: 1rem;
 }
-.field-input:focus { border-color: var(--gold-d); background: #3A0A1899; }
+.field-input:focus { border-color: var(--gold); background: #3A0A1899; }
 .field-input::placeholder { color: #7A6560; }
 
 .primary-btn {
@@ -134,7 +238,7 @@ body {
   padding: 0.8rem;
   background: var(--red);
   color: var(--white);
-  border: 1px solid var(--gold-d);
+  border: 1px solid var(--gold);
   font-family: 'DM Sans', sans-serif;
   font-size: 12px;
   font-weight: 500;
@@ -146,7 +250,7 @@ body {
 }
 .primary-btn:hover { background: var(--red-l); }
 
-.login-err {
+.admin-err {
   font-size: 0.82rem;
   color: #F0A090;
   font-style: italic;
@@ -167,7 +271,7 @@ body {
 }
 .text-link:hover { color: var(--gold); }
 
-/* Loading overlay */
+/* Loading bar */
 .loading-bar {
   position: fixed; top: 0; left: 0; right: 0;
   height: 2px;
@@ -260,7 +364,6 @@ body {
   max-width: 60px;
 }
 
-/* Post cards */
 .post-card {
   background: var(--white);
   border: 1px solid var(--rule);
@@ -275,7 +378,7 @@ body {
 }
 .post-card:hover {
   border-color: var(--red);
-  box-shadow: 0 2px 12px #7A102010;
+  box-shadow: 0 2px 12px #4A0E1C10;
   z-index: 1;
 }
 .post-card:first-child { border-radius: 4px 4px 0 0; }
@@ -287,14 +390,12 @@ body {
   text-align: center;
   min-width: 42px;
 }
-
 .post-card-day {
   font-family: 'DM Serif Display', serif;
   font-size: 1.6rem;
   line-height: 1;
   color: var(--dark);
 }
-
 .post-card-mon {
   font-size: 10px;
   font-weight: 500;
@@ -302,23 +403,19 @@ body {
   text-transform: uppercase;
   color: var(--mid-gray);
 }
-
 .post-card-divider {
   width: 1px;
   align-self: stretch;
   background: var(--rule);
   flex-shrink: 0;
 }
-
 .post-card-body { flex: 1; min-width: 0; }
-
 .post-card-meta {
   display: flex;
   align-items: center;
   gap: 0.6rem;
   margin-bottom: 0.35rem;
 }
-
 .post-type-badge {
   font-size: 10px;
   font-weight: 600;
@@ -329,12 +426,7 @@ body {
   padding: 0.15rem 0.5rem;
   border-radius: 2px;
 }
-
-.post-year {
-  font-size: 11px;
-  color: var(--mid-gray);
-}
-
+.post-year { font-size: 11px; color: var(--mid-gray); }
 .post-card-title {
   font-family: 'DM Serif Display', serif;
   font-size: 1.25rem;
@@ -344,7 +436,6 @@ body {
   transition: color 0.15s;
 }
 .post-card:hover .post-card-title { color: var(--red); }
-
 .post-card-preview {
   font-size: 0.88rem;
   color: var(--mid-gray);
@@ -354,7 +445,6 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-
 .post-card-arrow {
   color: var(--rule);
   font-size: 1.2rem;
@@ -364,12 +454,11 @@ body {
 }
 .post-card:hover .post-card-arrow { color: var(--red); transform: translateX(3px); }
 
-/* ── ARTICLE SCREEN ── */
+/* ── ARTICLE ── */
 #article-screen {
   background: var(--art-bg);
   color: var(--art-text);
 }
-
 #article-screen .site-header {
   background: var(--white);
   border-bottom-color: var(--rule);
@@ -383,14 +472,12 @@ body {
   margin: 0 auto;
   padding: 5rem 2rem 8rem;
 }
-
 .article-eyebrow {
   display: flex;
   align-items: center;
   gap: 0.8rem;
   margin-bottom: 1.2rem;
 }
-
 .article-eyebrow-date {
   font-size: 11px;
   font-weight: 500;
@@ -398,7 +485,6 @@ body {
   text-transform: uppercase;
   color: var(--art-faint);
 }
-
 .article-badge {
   font-size: 10px;
   font-weight: 600;
@@ -406,20 +492,18 @@ body {
   text-transform: uppercase;
   color: var(--red);
   background: var(--red-faint);
-  border: 1px solid #7A102033;
+  border: 1px solid #4A0E1C33;
   padding: 0.15rem 0.55rem;
   border-radius: 2px;
 }
-
 .article-title {
   font-family: 'DM Serif Display', serif;
   font-size: clamp(2rem, 5vw, 3rem);
   line-height: 1.1;
-  color: var(--white);
+  color: var(--dark);
   margin-bottom: 2.5rem;
   letter-spacing: -0.01em;
 }
-
 .article-rule {
   display: flex;
   align-items: center;
@@ -438,7 +522,6 @@ body {
   opacity: 0.5;
   flex-shrink: 0;
 }
-
 .article-text {
   font-size: 1.1rem;
   line-height: 1.9;
@@ -450,9 +533,7 @@ body {
 
 /* ── ADMIN ── */
 #admin-screen { background: var(--off-white); }
-
 .admin-body { padding: 2.5rem 3rem; max-width: 900px; }
-
 .admin-tabs {
   display: flex;
   border-bottom: 1px solid var(--rule);
@@ -479,18 +560,15 @@ body {
   transition: color 0.2s;
 }
 .admin-tab.active { color: var(--red); border-bottom-color: var(--red); }
-
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
 
-/* Form */
 .form-card {
   background: var(--white);
   border: 1px solid var(--rule);
   padding: 2rem;
   margin-bottom: 1.5rem;
 }
-
 .form-group { margin-bottom: 1.4rem; }
 .form-label {
   display: block;
@@ -520,7 +598,6 @@ body {
 .form-textarea { resize: vertical; min-height: 240px; line-height: 1.7; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
-/* Reader checkboxes */
 .readers-grid {
   display: flex;
   flex-wrap: wrap;
@@ -548,7 +625,6 @@ body {
 }
 .reader-pill input { display: none; }
 
-/* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -572,7 +648,6 @@ body {
 .btn-danger:hover { background: #C0392B; color: white; }
 .btn-sm { padding: 0.35rem 0.9rem; font-size: 10px; }
 
-/* Post list (admin) */
 .post-row {
   background: var(--white);
   border: 1px solid var(--rule);
@@ -594,7 +669,6 @@ body {
 }
 .post-row-sub { font-size: 0.78rem; color: var(--mid-gray); margin-top: 0.1rem; }
 
-/* Reader row */
 .reader-row {
   background: var(--white);
   border: 1px solid var(--rule);
@@ -658,6 +732,8 @@ body {
   .form-row, .add-reader-row { grid-template-columns: 1fr; }
   .post-card { flex-direction: column; gap: 0.8rem; }
   .post-card-divider { display: none; }
+  .passport-top { padding: 2rem 1.6rem 1.6rem; }
+  .passport-form { padding: 2rem 1.6rem; }
 }
 </style>
 </head>
@@ -668,30 +744,38 @@ body {
 
 <!-- ══ LOGIN ══ -->
 <div id="login-screen" class="screen active">
-  <div class="login-card">
-    <div class="login-eyebrow">Private Writings</div>
-    <h1 class="login-title">PPL Prose</h1>
-    <p class="login-sub">progress, not perfection</p>
-    <div class="login-divider"></div>
-    <label class="field-label" for="login-input">Password</label>
-    <input type="password" id="login-input" class="field-input" placeholder="Enter your password" autocomplete="off" />
-    <div class="login-err" id="login-err"></div>
-    <button class="primary-btn" onclick="handleLogin()">Enter</button>
-    <br>
-    <a class="text-link" onclick="showScreen('admin-login-screen')">Editor access →</a>
+  <div class="passport-gold-bar"></div>
+
+  <div class="passport-top">
+    <div class="passport-numbers">2000 &nbsp;&nbsp; 80113 &nbsp;&nbsp; 60657</div>
+    <div class="passport-title">Pierce Prose</div>
+    <div class="passport-subtitle">progress, not perfection</div>
   </div>
+
+  <div class="passport-mrz-block">
+    <div class="passport-mrz">P&lt;GBR&lt;LARGAN&lt;&lt;PIERCE&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</div>
+    <div class="passport-mrz">PP2000801136065700GBR&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</div>
+  </div>
+
+  <div class="passport-form">
+    <input type="password" id="login-input" class="passport-input" placeholder="· · · · · · · · · ·" autocomplete="off"/>
+    <div class="login-err" id="login-err"></div>
+    <a class="passport-admin-link" onclick="showScreen('admin-login-screen')">Editor access →</a>
+  </div>
+
+  <div class="passport-gold-bar"></div>
 </div>
 
 <!-- ══ ADMIN LOGIN ══ -->
 <div id="admin-login-screen" class="screen">
   <div class="login-card">
     <div class="login-eyebrow">Editor Access</div>
-    <h1 class="login-title">PPL Prose</h1>
+    <h1 class="login-title">Pierce Prose</h1>
     <p class="login-sub">admin panel</p>
     <div class="login-divider"></div>
     <label class="field-label" for="admin-input">Admin Password</label>
     <input type="password" id="admin-input" class="field-input" placeholder="Enter admin password" autocomplete="off" />
-    <div class="login-err" id="admin-err"></div>
+    <div class="admin-err" id="admin-err"></div>
     <button class="primary-btn" onclick="handleAdminLogin()">Enter</button>
     <br>
     <a class="text-link" onclick="showScreen('login-screen')">← Reader login</a>
@@ -701,7 +785,7 @@ body {
 <!-- ══ READER ══ -->
 <div id="reader-screen" class="screen">
   <header class="site-header">
-    <div class="site-logo">PPL Prose<span></span></div>
+    <div class="site-logo">Pierce Prose<span></span></div>
     <div class="nav-actions">
       <button class="nav-btn" onclick="logout()">Sign out</button>
     </div>
@@ -716,7 +800,7 @@ body {
 <!-- ══ ARTICLE ══ -->
 <div id="article-screen" class="screen">
   <header class="site-header">
-    <div class="site-logo">PPL Prose<span></span></div>
+    <div class="site-logo">Pierce Prose<span></span></div>
     <div class="nav-actions">
       <button class="nav-btn" onclick="showReader()">← Back</button>
       <button class="nav-btn" onclick="logout()">Sign out</button>
@@ -736,7 +820,7 @@ body {
 <!-- ══ ADMIN ══ -->
 <div id="admin-screen" class="screen">
   <header class="site-header">
-    <div class="site-logo">PPL Prose<span></span></div>
+    <div class="site-logo">Pierce Prose<span></span></div>
     <div class="nav-actions">
       <button class="nav-btn" onclick="showScreen('login-screen')">View site</button>
       <button class="nav-btn" onclick="logout()">Sign out</button>
@@ -749,7 +833,6 @@ body {
       <button class="admin-tab" onclick="switchTab('tab-readers',this)">Readers</button>
     </div>
 
-    <!-- ── WRITE ── -->
     <div id="tab-write" class="tab-panel active">
       <div class="form-card">
         <div class="form-group">
@@ -793,12 +876,10 @@ body {
       </div>
     </div>
 
-    <!-- ── POSTS ── -->
     <div id="tab-posts" class="tab-panel">
       <div id="admin-post-list"></div>
     </div>
 
-    <!-- ── READERS ── -->
     <div id="tab-readers" class="tab-panel">
       <div class="form-card">
         <div class="add-reader-row">
@@ -819,14 +900,10 @@ body {
 </div>
 
 <script>
-// ════════════════════════════════════════
-// SUPABASE CONFIG — replace these two lines
-// ════════════════════════════════════════
 const SUPABASE_URL  = 'https://ningjmekeilcqbjklicz.supabase.co';
 const SUPABASE_KEY  = 'sb_publishable_DxEp_BxKr4Bn0bL2twBEaA_sIG1-8Wl';
-const ADMIN_PASS    = 'admin2025'; // change this after deploy
+const ADMIN_PASS    = 'admin2025';
 
-// ── Supabase helpers ──
 const sb = (path, opts={}) => fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
   headers: {
     'apikey': SUPABASE_KEY,
@@ -841,11 +918,9 @@ const dbGet  = (table, query='')    => sb(`${table}?${query}`);
 const dbPost = (table, body)        => sb(table, { method:'POST', body:JSON.stringify(body), prefer:'return=representation' });
 const dbDel  = (table, query)       => sb(`${table}?${query}`, { method:'DELETE' });
 
-// ── Local state (cache) ──
 let readers = [];
 let currentUser = null;
 
-// ── Utils ──
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -880,7 +955,6 @@ function fmtShort(str) {
   };
 }
 
-// ── Auth ──
 function handleLogin() {
   const val = document.getElementById('login-input').value.trim();
   const err = document.getElementById('login-err');
@@ -910,7 +984,6 @@ document.getElementById('admin-input').addEventListener('keydown', e => { if (e.
 
 function logout() { currentUser = null; showScreen('login-screen'); }
 
-// ── Load readers on startup ──
 async function init() {
   try {
     loading(true);
@@ -923,12 +996,10 @@ async function init() {
   }
 }
 
-// ── Reader view ──
 async function renderReader() {
   document.getElementById('reader-greeting').textContent = `Welcome back, ${currentUser.name}.`;
   loading(true);
   try {
-    // Get post_readers entries for this reader
     const pr = await dbGet('post_readers', `reader_id=eq.${currentUser.id}&select=post_id`);
     const postIds = pr.map(x => x.post_id);
     if (!postIds.length) {
@@ -991,7 +1062,6 @@ function openArticle(p) {
   showScreen('article-screen');
 }
 
-// ── Admin ──
 function renderAdmin() {
   renderReaderPills();
   document.getElementById('p-date').value = new Date().toISOString().split('T')[0];
@@ -1160,7 +1230,6 @@ async function deleteReader(id) {
   }
 }
 
-// Boot
 init();
 </script>
 </body>
